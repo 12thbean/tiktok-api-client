@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<ruleset name="Zendrop code-style standards"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd"
+>
+    <!-- Main rule-->
+    <rule ref="PSR12"/>
+
+    <!-- Additional custom rules-->
+    <rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired"/>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps"/>
+    <!-- <rule ref="Squiz.PHP.NonExecutableCode"/> Temporary disabled until phpcs 3.8.0+ released -->
+    <rule ref="Generic.PHP.LowerCaseConstant"/>
+    <rule ref="Generic.NamingConventions.CamelCapsFunctionName">
+        <exclude-pattern>*/tests</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
+    <rule ref="Squiz.PHP.CommentedOutCode"/>
+
+    <!-- Excluding Squiz.Functions.MultiLineFunctionDeclaration.Empty rule -->
+    <rule ref="Squiz.Functions.MultiLineFunctionDeclaration.EmptyLine">
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
+    </rule>
+
+    <arg name="basepath" value="."/>
+
+    <file>./src</file>
+
+    <arg name="colors"/>
+    <arg value="spv"/>
+    <ini name="memory_limit" value="128M"/>
+</ruleset>
