@@ -4,7 +4,7 @@ namespace Zendrop\Tiktok\Clients;
 
 class TiktokClient
 {
-    /** @var array<string, array<string, BaseApiClient>> */
+    /** @var array<string, array<string, AbstractClient>> */
     private static array $registry = [];
 
     public function __construct(
@@ -15,7 +15,7 @@ class TiktokClient
     ) {
     }
 
-    public static function fake(string $class, string $shopId, BaseApiClient $instance): void
+    public static function fake(string $class, string $shopId, AbstractClient $instance): void
     {
         self::$registry[$class][$shopId] = $instance;
     }
@@ -26,11 +26,11 @@ class TiktokClient
     }
 
     /**
-     * @template TClient of BaseApiClient
+     * @template TClient of AbstractClient
      * @param class-string<TClient> $class
      * @return TClient
      */
-    private function make(string $class): BaseApiClient
+    private function make(string $class): AbstractClient
     {
         return self::$registry[$class][$this->shopId] ??
             new $class($this->appKey, $this->shopId, $this->shopCipher, $this->accessToken);

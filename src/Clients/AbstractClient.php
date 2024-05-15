@@ -17,7 +17,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-abstract class BaseApiClient
+abstract class AbstractClient
 {
     private const BASE_URL = 'https://open-api.tiktokglobalshop.com';
 

@@ -6,13 +6,10 @@ use Zendrop\Tiktok\DTO\Products\ProductDTO;
 use Zendrop\Tiktok\Enum\ApiVersion;
 use Zendrop\Tiktok\Http\Packs\HttpMethod;
 
-class ProductClient extends BaseApiClient
+class ProductClient extends AbstractClient implements ProductClientInterface
 {
     /**
-     * @param int $pageSize
-     * @return ProductDTO[]
-     * @throws \JsonException
-     * @throws \Zendrop\Tiktok\Exceptions\ClientException
+     * {@inheritDoc}
      */
     public function getList(int $pageSize = 25): array
     {
