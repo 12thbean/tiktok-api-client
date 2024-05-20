@@ -84,27 +84,9 @@ abstract class AbstractClient
     ): Response {
         $requestMethod = $method->value;
 
-        $url = $this->generateRequestUrl($routeGroup, $resource, $requestMethod, $apiVersion, $payload);
-        $path = parse_url($url, PHP_URL_PATH);
+        $url = $this->generateRequestUrl($routeGroup, $resource, $method, $apiVersion, $payload);
 
-        $params = [
-            'app_key' => $this->appKey,
-            'shop_id' => $this->shopId,
-            'version' => $apiVersion?->value ?? $this->apiVersion->value,
-            'timestamp' => time(),
-            'shop_cipher' => $this->shopCipher,
-            ...$payload,
-        ];
-        $sign = $this->generateSignature($params, $path, $payload);
-        $url .= '?' . http_build_query([
-            ...$params,
-            'sign' => $sign,
-        ]);
-
-        $options = !in_array($requestMethod, [
-            HttpMethod::Get->value,
-            HttpMethod::Delete->value,
-        ], true) ? ['json' => $payload] : [];
+        $options = $requestMethod !== HttpMethod::Get->value ? ['json' => $payload] : [];
 
         $response = Http::withHeaders([
             'Accept' => 'application/json',
@@ -131,11 +113,12 @@ abstract class AbstractClient
      * Generates request URL to requested resource.
      *
      * @param array<string, mixed> $payload
+     * @throws \JsonException
      */
     private function generateRequestUrl(
         string $routeGroup,
         string $resource,
-        string $method,
+        HttpMethod $method,
         ?ApiVersion $apiVersion,
         array $payload,
     ): string {
@@ -145,11 +128,35 @@ abstract class AbstractClient
         $apiVersionValue = $apiVersion?->value ?? $this->apiVersion->value;
 
         $url = self::BASE_URL . "/{$routeGroup}/{$apiVersionValue}/{$resource}";
+        $path = parse_url($url, PHP_URL_PATH);
 
-        $getOrDelete = in_array($method, [HttpMethod::Get->value, HttpMethod::Delete->value], true);
-        if (!empty($payload) && $getOrDelete) {
-            $url .= '?' . http_build_query($payload);
+        $params = [
+            'app_key' => $this->appKey,
+            'shop_id' => $this->shopId,
+            'version' => $apiVersion?->value ?? $this->apiVersion->value,
+            'timestamp' => time(),
+            'shop_cipher' => $this->shopCipher,
+        ];
+
+        if (!empty($payload) && $method === HttpMethod::Get) {
+            $params = [
+                ...$params,
+                ...$payload,
+            ];
+        } elseif (!empty($payload['page_size'])) {
+            $params['page_size'] = $payload['page_size'];
         }
+
+        $sign = $this->generateSignature($params, $method, $path, $payload);
+
+        $params = [
+            ...$params,
+            'sign' => $sign,
+            'access_token' => $this->accessToken,
+        ];
+        ksort($params);
+
+        $url .= (strpos($url, '?') ? '&' : '?') . http_build_query($params);
 
         return $url;
     }
@@ -216,17 +223,27 @@ abstract class AbstractClient
      * @param array<string, mixed> $body
      * @throws \JsonException
      */
-    private function generateSignature(array $payload, string $path, array $body = []): string
-    {
+    private function generateSignature(
+        array $payload,
+        HttpMethod $method,
+        string $path,
+        array $body = [],
+        bool $formData = false,
+    ): string {
         ksort($payload);
 
         $stringToSign = '';
         foreach ($payload as $key => $value) {
-            $stringToSign .= $key . $value;
+            if (!is_array($value)) {
+                $stringToSign .= $key . $value;
+            }
         }
 
         $stringToSign = $path . $stringToSign;
-        $stringToSign .= json_encode($body, JSON_THROW_ON_ERROR);
+        if ($method !== HttpMethod::Get && $formData === false) {
+            $stringToSign .= json_encode($body, JSON_THROW_ON_ERROR);
+        }
+
         $stringToSign = $this->appSecret . $stringToSign . $this->appSecret;
 
         return hash_hmac('sha256', $stringToSign, $this->appSecret);

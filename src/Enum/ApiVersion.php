@@ -5,5 +5,6 @@ namespace Zendrop\Tiktok\Enum;
 enum ApiVersion: string
 {
     case V202401 = '202401';
+    case V202309 = '202309';
     case V202312 = '202312';
 }
