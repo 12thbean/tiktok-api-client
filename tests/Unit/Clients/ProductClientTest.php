@@ -36,6 +36,9 @@ final class ProductClientTest extends ClientTestCase
 
         Http::fake([
             '*/product/*/products/search*' => $listResponse,
+            '*/product/*/products/*' => ProductTestData::item(
+                productId: $listResponse['data']['products'][0]['id'],
+            ),
         ]);
 
         $list = $this->client->getList();

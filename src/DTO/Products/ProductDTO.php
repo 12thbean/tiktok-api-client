@@ -6,6 +6,7 @@ use Zendrop\Data\ArrayOf;
 use Zendrop\Tiktok\DTO\BaseDTO;
 use Zendrop\Tiktok\DTO\Packages\DimensionDTO;
 use Zendrop\Tiktok\DTO\Products\Sku\SkuDTO;
+use Zendrop\Tiktok\Enum\Products\ProductStatus;
 use Zendrop\Tiktok\Tests\Unit\TestData\Images\ImageDTO;
 
 class ProductDTO extends BaseDTO
@@ -13,7 +14,7 @@ class ProductDTO extends BaseDTO
     public function __construct(
         public readonly string $id,
         public readonly ?string $title = null,
-        public readonly ?string $status = null,
+        public readonly ?ProductStatus $status = null,
         public readonly ?string $description = null,
         public readonly ?BrandDTO $brand = null,
         public readonly ?bool $isCodAllowed = null,
