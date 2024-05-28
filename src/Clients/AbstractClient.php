@@ -110,6 +110,38 @@ abstract class AbstractClient
     }
 
     /**
+     * @param array<string, mixed> $payload
+     * @throws ClientException
+     */
+    protected function sendUnauthorizedRequest(
+        string $url,
+        HttpMethod $method = HttpMethod::Get,
+        array $payload = [],
+    ): Response {
+        $requestMethod = $method->value;
+
+        $options = !in_array($requestMethod, [
+            HttpMethod::Get->value,
+            HttpMethod::Delete->value,
+        ], true) ? ['json' => $payload] : [];
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->send($requestMethod, $url, $options);
+
+        if (!$response->successful() || $response->json() === null) {
+            $this->handleResponseError(
+                response: $response,
+                resource: '',
+                payload: $payload,
+            );
+        }
+
+        return $response;
+    }
+
+    /**
      * Generates request URL to requested resource.
      *
      * @param array<string, mixed> $payload
