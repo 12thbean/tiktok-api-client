@@ -20,6 +20,11 @@ class TiktokClient
         self::$registry[$class][$shopId] = $instance;
     }
 
+    public function auth(): AuthClient
+    {
+        return $this->make(AuthClient::class);
+    }
+
     public function product(): ProductClient
     {
         return $this->make(ProductClient::class);
