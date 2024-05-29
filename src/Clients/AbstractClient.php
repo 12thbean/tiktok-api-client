@@ -56,10 +56,10 @@ abstract class AbstractClient
     public function __construct(
         private readonly string $appKey,
         private readonly string $appSecret,
-        private readonly string $shopId,
-        private readonly string $shopCipher,
         private readonly string $accessToken,
         private readonly ApiVersion $apiVersion,
+        private readonly ?string $shopId = null,
+        private readonly ?string $shopCipher = null,
     ) {
     }
 
@@ -125,10 +125,7 @@ abstract class AbstractClient
             HttpMethod::Delete->value,
         ], true) ? ['json' => $payload] : [];
 
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ])->send($requestMethod, $url, $options);
+        $response = Http::send($requestMethod, $url, $options);
 
         if (!$response->successful() || $response->json() === null) {
             $this->handleResponseError(
@@ -164,11 +161,15 @@ abstract class AbstractClient
 
         $params = [
             'app_key' => $this->appKey,
-            'shop_id' => $this->shopId,
-            'version' => $apiVersion?->value ?? $this->apiVersion->value,
             'timestamp' => time(),
-            'shop_cipher' => $this->shopCipher,
         ];
+
+        if ($this->shopId !== null) {
+            $params['shop_id'] = $this->shopId;
+        }
+        if ($this->shopCipher !== null) {
+            $params['shop_cipher'] = $this->shopCipher;
+        }
 
         if (!empty($payload) && $method === HttpMethod::Get) {
             $params = [
@@ -184,7 +185,6 @@ abstract class AbstractClient
         $params = [
             ...$params,
             'sign' => $sign,
-            'access_token' => $this->accessToken,
         ];
         ksort($params);
 

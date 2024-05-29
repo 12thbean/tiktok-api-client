@@ -9,15 +9,15 @@ class TiktokClient
 
     public function __construct(
         private readonly string $appKey,
-        private readonly string $shopId,
-        private readonly string $shopCipher,
         private readonly string $accessToken,
+        private readonly ?string $shopId = null,
+        private readonly ?string $shopCipher = null,
     ) {
     }
 
-    public static function fake(string $class, string $shopId, AbstractClient $instance): void
+    public static function fake(string $class, string $appKey, ?string $shopId, AbstractClient $instance): void
     {
-        self::$registry[$class][$shopId] = $instance;
+        self::$registry[$class][$appKey . ($shopId ?? '')] = $instance;
     }
 
     public function auth(): AuthClient
@@ -42,7 +42,12 @@ class TiktokClient
      */
     private function make(string $class): AbstractClient
     {
-        return self::$registry[$class][$this->shopId] ??
-            new $class($this->appKey, $this->shopId, $this->shopCipher, $this->accessToken);
+        return self::$registry[$class][$this->appKey . ($this->shopId ?? '')] ??
+            new $class(
+                $this->appKey,
+                $this->accessToken,
+                $this->shopId,
+                $this->shopCipher,
+            );
     }
 }
