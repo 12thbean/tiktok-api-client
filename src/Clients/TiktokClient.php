@@ -25,6 +25,11 @@ class TiktokClient
         return $this->make(AuthClient::class);
     }
 
+    public function shop(): ShopClient
+    {
+        return $this->make(ShopClient::class);
+    }
+
     public function product(): ProductClient
     {
         return $this->make(ProductClient::class);
