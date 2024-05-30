@@ -2,6 +2,8 @@
 
 namespace Zendrop\Tiktok\Clients;
 
+use Zendrop\Tiktok\Enum\ApiVersion;
+
 class TiktokClient
 {
     /** @var array<string, array<string, AbstractClient>> */
@@ -9,7 +11,9 @@ class TiktokClient
 
     public function __construct(
         private readonly string $appKey,
+        private readonly string $appSecret,
         private readonly string $accessToken,
+        private readonly ApiVersion $apiVersion = ApiVersion::V202309,
         private readonly ?string $shopId = null,
         private readonly ?string $shopCipher = null,
     ) {
@@ -45,7 +49,9 @@ class TiktokClient
         return self::$registry[$class][$this->appKey . ($this->shopId ?? '')] ??
             new $class(
                 $this->appKey,
+                $this->appSecret,
                 $this->accessToken,
+                $this->apiVersion,
                 $this->shopId,
                 $this->shopCipher,
             );
