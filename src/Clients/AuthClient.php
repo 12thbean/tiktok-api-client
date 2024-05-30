@@ -16,7 +16,6 @@ class AuthClient extends AbstractClient implements AuthClientInterface
     {
         $response = $this->sendUnauthorizedRequest(
             url: $url,
-            method: HttpMethod::Post,
             payload: $payload->toArray(),
         );
 
@@ -30,7 +29,6 @@ class AuthClient extends AbstractClient implements AuthClientInterface
     {
         $response = $this->sendUnauthorizedRequest(
             url: $url,
-            method: HttpMethod::Post,
             payload: $payload->toArray(),
         );
 
