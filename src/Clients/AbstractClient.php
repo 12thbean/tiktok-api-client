@@ -120,10 +120,11 @@ abstract class AbstractClient
     ): Response {
         $requestMethod = $method->value;
 
-        $options = !in_array($requestMethod, [
-            HttpMethod::Get->value,
-            HttpMethod::Delete->value,
-        ], true) ? ['json' => $payload] : [];
+        $getOrDelete = in_array($method, [HttpMethod::Get, HttpMethod::Delete], true);
+        if (!empty($payload) && $getOrDelete) {
+            $url .= '?' . http_build_query($payload);
+        }
+        $options = $getOrDelete ? [] : ['json' => $payload];
 
         $response = Http::send($requestMethod, $url, $options);
 

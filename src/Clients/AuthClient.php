@@ -16,11 +16,10 @@ class AuthClient extends AbstractClient implements AuthClientInterface
     {
         $response = $this->sendUnauthorizedRequest(
             url: $url,
-            method: HttpMethod::Post,
             payload: $payload->toArray(),
         );
 
-        return AccessTokenDTO::fromResponse($response->json());
+        return AccessTokenDTO::fromResponse($response->json()['data']);
     }
 
     /**
@@ -30,10 +29,9 @@ class AuthClient extends AbstractClient implements AuthClientInterface
     {
         $response = $this->sendUnauthorizedRequest(
             url: $url,
-            method: HttpMethod::Post,
             payload: $payload->toArray(),
         );
 
-        return AccessTokenDTO::fromResponse($response->json());
+        return AccessTokenDTO::fromResponse($response->json()['data']);
     }
 }
