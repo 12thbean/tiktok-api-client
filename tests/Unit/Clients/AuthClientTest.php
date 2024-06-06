@@ -34,7 +34,7 @@ class AuthClientTest extends ClientTestCase
         );
 
         Http::fake([
-            '*/api/v2/token/get' => Http::response($expectedData),
+            '*/api/v2/token/get*' => Http::response($expectedData),
         ]);
 
         $accessToken = $this->client->getAccessToken('fake_url/api/v2/token/get', $payload);
@@ -58,7 +58,7 @@ class AuthClientTest extends ClientTestCase
         );
 
         Http::fake([
-            '*/api/v2/token/refresh' => Http::response($expectedData),
+            '*/api/v2/token/refresh*' => Http::response($expectedData),
         ]);
 
         $accessToken = $this->client->refreshAccessToken('fake_url/api/v2/token/refresh', $payload);
